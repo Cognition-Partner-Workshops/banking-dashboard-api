@@ -1,0 +1,187 @@
+/*
+ * Dark theme for Swagger UI (Banking Dashboard API).
+ * Injected into the Swagger UI page by SwaggerUiDarkThemeFilter.
+ */
+
+:root {
+  --bg-base: #1b1b2b;
+  --bg-elevated: #232336;
+  --bg-input: #2b2b40;
+  --border: #3a3a52;
+  --text: #d7d7e0;
+  --text-muted: #9a9ab0;
+  --accent: #6c8cff;
+}
+
+body,
+.swagger-ui {
+  background-color: var(--bg-base) !important;
+  color: var(--text) !important;
+}
+
+/* Top bar */
+.swagger-ui .topbar {
+  background-color: #11111c !important;
+  border-bottom: 1px solid var(--border);
+}
+.swagger-ui .topbar .download-url-wrapper input[type="text"] {
+  background-color: var(--bg-input) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+/* Generic text */
+.swagger-ui,
+.swagger-ui .info .title,
+.swagger-ui .info li,
+.swagger-ui .info p,
+.swagger-ui .info table,
+.swagger-ui .info a,
+.swagger-ui .opblock-tag,
+.swagger-ui .opblock-tag small,
+.swagger-ui .opblock .opblock-summary-operation-id,
+.swagger-ui .opblock .opblock-summary-path,
+.swagger-ui .opblock .opblock-summary-path__deprecated,
+.swagger-ui .opblock .opblock-summary-description,
+.swagger-ui .opblock-description-wrapper p,
+.swagger-ui .opblock-external-docs-wrapper p,
+.swagger-ui .opblock-title_normal p,
+.swagger-ui .parameter__name,
+.swagger-ui .parameter__type,
+.swagger-ui .parameter__in,
+.swagger-ui table thead tr td,
+.swagger-ui table thead tr th,
+.swagger-ui .response-col_status,
+.swagger-ui .response-col_links,
+.swagger-ui .tab li,
+.swagger-ui label,
+.swagger-ui .responses-inner h4,
+.swagger-ui .responses-inner h5,
+.swagger-ui .model-title,
+.swagger-ui .model,
+.swagger-ui section.models h4,
+.swagger-ui .scheme-container .schemes > label {
+  color: var(--text) !important;
+}
+
+.swagger-ui .opblock-tag {
+  border-bottom: 1px solid var(--border);
+}
+
+.swagger-ui .info a,
+.swagger-ui a.nostyle,
+.swagger-ui a {
+  color: var(--accent) !important;
+}
+
+/* Operation blocks */
+.swagger-ui .opblock {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: none !important;
+}
+.swagger-ui .opblock .opblock-section-header {
+  background: var(--bg-input) !important;
+  border-bottom: 1px solid var(--border);
+}
+.swagger-ui .opblock .opblock-section-header h4,
+.swagger-ui .opblock .opblock-section-header > label {
+  color: var(--text) !important;
+}
+
+.swagger-ui .opblock.opblock-get { background: rgba(97, 175, 254, 0.08) !important; border-color: #61affe !important; }
+.swagger-ui .opblock.opblock-post { background: rgba(73, 204, 144, 0.08) !important; border-color: #49cc90 !important; }
+.swagger-ui .opblock.opblock-put { background: rgba(252, 161, 48, 0.08) !important; border-color: #fca130 !important; }
+.swagger-ui .opblock.opblock-delete { background: rgba(249, 62, 62, 0.08) !important; border-color: #f93e3e !important; }
+
+/* Schemes / servers bar */
+.swagger-ui .scheme-container {
+  background: var(--bg-elevated) !important;
+  box-shadow: none !important;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Inputs and selects */
+.swagger-ui select,
+.swagger-ui input[type="text"],
+.swagger-ui input[type="password"],
+.swagger-ui input[type="search"],
+.swagger-ui input[type="email"],
+.swagger-ui textarea {
+  background: var(--bg-input) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* Tables */
+.swagger-ui table tbody tr td {
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+.swagger-ui table thead tr td,
+.swagger-ui table thead tr th {
+  border-color: var(--border) !important;
+}
+
+/* Models */
+.swagger-ui section.models {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border) !important;
+}
+.swagger-ui section.models .model-container {
+  background: var(--bg-input) !important;
+}
+.swagger-ui .model-toggle:after { filter: invert(1); }
+.swagger-ui .prop-type { color: #a78bfa !important; }
+
+/* Code / response samples */
+.swagger-ui .highlight-code,
+.swagger-ui .microlight,
+.swagger-ui .responses-inner pre,
+.swagger-ui textarea.curl {
+  background: #0f0f1a !important;
+  color: #e6e6f0 !important;
+}
+.swagger-ui .response-col_description__inner div.markdown,
+.swagger-ui .response-col_description__inner div.renderedMarkdown {
+  background: #0f0f1a !important;
+  color: #e6e6f0 !important;
+}
+
+/* Buttons */
+.swagger-ui .btn {
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+  background: var(--bg-input) !important;
+}
+.swagger-ui .btn.execute {
+  background-color: var(--accent) !important;
+  color: #0f0f1a !important;
+  border-color: var(--accent) !important;
+}
+.swagger-ui .btn.authorize {
+  color: #49cc90 !important;
+  border-color: #49cc90 !important;
+}
+.swagger-ui .btn.authorize svg { fill: #49cc90 !important; }
+
+/* Modal dialogs (Authorize, etc.) */
+.swagger-ui .dialog-ux .modal-ux {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border) !important;
+}
+.swagger-ui .dialog-ux .modal-ux-header h3,
+.swagger-ui .dialog-ux .modal-ux-content h4,
+.swagger-ui .dialog-ux .modal-ux-content p {
+  color: var(--text) !important;
+}
+
+/* Misc */
+.swagger-ui .opblock-summary-method { color: #fff !important; }
+.swagger-ui svg.arrow,
+.swagger-ui section.models .model-toggle.collapsed:after { filter: invert(0.85); }
+.swagger-ui .markdown code,
+.swagger-ui .renderedMarkdown code {
+  background: #0f0f1a !important;
+  color: #ffb3b3 !important;
+}
