@@ -13,6 +13,6 @@ jobs:
       id-token: write
     uses: Cognition-Partner-Workshops/otterworks/.github/workflows/platform-app-pipeline.yml@19392116c2197d713811213778a7a1d75eb90cc0
     with:
-      app_dir: ${{ github.workspace }}
+      app_dir: ../${{ github.event.repository.name }}
       standards_ref: 19392116c2197d713811213778a7a1d75eb90cc0
       eks_deploy: false

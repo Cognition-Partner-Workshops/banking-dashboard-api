@@ -81,9 +81,12 @@ mvn test
 ## Platform deployment
 
 The platform caller pins the chart, policy and pipeline to OtterWorks commit
-`19392116c2197d713811213778a7a1d75eb90cc0`. It passes the checkout's absolute path
-as `app_dir` because the pinned pipeline derives the app and image names using
-`basename`; `.` would not produce a valid app name. EKS deployment is disabled.
+`19392116c2197d713811213778a7a1d75eb90cc0`. It passes `../<repository-name>`
+as `app_dir`, which resolves to the checkout root while preserving the app name
+for the pinned pipeline's `basename` calls. `github.workspace` is not populated
+when a reusable-workflow caller's inputs are evaluated. EKS deployment is disabled;
+the caller grants `id-token: write` because the template declares that permission
+for its disabled EKS job too. The verification job has no OIDC permission.
 
 Spring Boot 4.0.9 (Spring Framework 7.0.10 and Tomcat 11.0.27) and springdoc 3.0.3
 replace vulnerable dependencies flagged by the platform image scan. Java remains
