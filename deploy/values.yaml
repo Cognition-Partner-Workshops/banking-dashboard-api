@@ -1,0 +1,21 @@
+app: banking-dashboard-api
+owner: banking-platform
+costCenter: BANK-0001
+env:
+  SPRING_DATASOURCE_URL: jdbc:postgresql://banking-postgres:5432/banking
+  SPRING_DATASOURCE_USERNAME: banking
+secretEnv:
+  SPRING_DATASOURCE_PASSWORD:
+    secret: banking-database
+    key: password
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
+writablePaths:
+  - /tmp
+probes:
+  path: /health
