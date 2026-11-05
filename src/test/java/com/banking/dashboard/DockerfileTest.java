@@ -41,7 +41,9 @@ class DockerfileTest {
 
         assertTrue(userLine >= 0, "Final build stage must declare a USER");
         assertTrue(userLine < commandLine, "USER must appear before ENTRYPOINT or CMD");
-        assertFalse(user.equalsIgnoreCase("root") || user.equals("0"),
-                "Final build stage must use a non-root user");
+        String uid = user.split(":", 2)[0];
+        assertTrue(uid.matches("\\d+"),
+                "USER must be a numeric uid so runAsNonRoot can verify it, got: " + user);
+        assertFalse(Integer.parseInt(uid) == 0, "Final build stage must use a non-root user");
     }
 }

@@ -6,8 +6,8 @@ RUN apk add --no-cache maven && mvn clean package -DskipTests -q
 
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
-RUN addgroup -S app && adduser -S -G app app
-COPY --from=build --chown=app:app /app/target/*.jar app.jar
-USER app
+RUN addgroup -S -g 10001 app && adduser -S -u 10001 -G app app
+COPY --from=build --chown=10001:10001 /app/target/*.jar app.jar
+USER 10001:10001
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
