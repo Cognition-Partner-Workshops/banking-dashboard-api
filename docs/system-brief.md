@@ -8,7 +8,7 @@ A read-mostly analytics backend that exposes pre-computed banking metrics over R
 
 ## Architecture
 
-- **Language/framework:** Java 17 on Spring Boot 3.2.5 with Spring Web, Spring Data JPA and Bean Validation ([pom.xml](../pom.xml#L7-L30)).
+- **Language/framework:** Java 17 on Spring Boot 3.2.5 with Spring Web, Spring Data JPA and Bean Validation ([pom.xml](../pom.xml#L7-L21), [pom.xml](../pom.xml#L24-L36)).
 - **Layers:** controller → service → repository → database ([README.md](../README.md#L81-L91)). Two controllers: [DashboardController.java](../src/main/java/com/banking/dashboard/controller/DashboardController.java) and [SchemaController.java](../src/main/java/com/banking/dashboard/controller/SchemaController.java); a central error handler in [GlobalExceptionHandler.java](../src/main/java/com/banking/dashboard/config/GlobalExceptionHandler.java).
 - **API docs:** SpringDoc OpenAPI / Swagger UI at `/swagger-ui.html` and `/v3/api-docs` ([pom.xml](../pom.xml#L42-L46), [application.yml](../src/main/resources/application.yml#L20-L25)).
 - **Deployment:** multi-stage Docker image (JDK build stage, JRE 17 Alpine runtime) listening on port 8080 ([Dockerfile](../Dockerfile)). The Docker build skips tests (`-DskipTests`, [Dockerfile](../Dockerfile#L5)). No CI pipeline, Kubernetes, or IaC definitions exist in the repo (observed: no `.github/` or deploy manifests).
@@ -24,17 +24,17 @@ A read-mostly analytics backend that exposes pre-computed banking metrics over R
 ## Integrations
 
 - **Inbound:** unauthenticated HTTP/JSON REST; six GETs, one state-changing `POST /api/dashboard/refresh-views` ([DashboardController.java](../src/main/java/com/banking/dashboard/controller/DashboardController.java#L93-L104)), and `GET /api/schema/tables` ([SchemaController.java](../src/main/java/com/banking/dashboard/controller/SchemaController.java#L26-L31)).
-- **Outbound:** PostgreSQL via JDBC only ([pom.xml](../pom.xml#L31-L35)). No other external systems observed.
-- **Auth:** no Spring Security or any auth dependency is declared ([pom.xml](../pom.xml#L24-L56)). DB credentials are injected via environment variables (`SPRING_DATASOURCE_URL/USERNAME/PASSWORD`) ([application.yml](../src/main/resources/application.yml#L3-L5)); no secret values are stored in the main config.
+- **Outbound:** PostgreSQL via JDBC only ([pom.xml](../pom.xml#L37-L41)). No other external systems observed.
+- **Auth:** no Spring Security or any auth dependency is declared ([pom.xml](../pom.xml#L24-L57)). DB credentials are injected via environment variables (`SPRING_DATASOURCE_URL/USERNAME/PASSWORD`) ([application.yml](../src/main/resources/application.yml#L3-L5)); no secret values are stored in the main config.
 
 ## Top 3 operational risks
 
 1. **High — Unauthenticated access to customer PII and admin actions.**
-   Any caller that can reach the service can download every customer's name, email, credit score and balances, trigger a DB-wide view refresh, and map the database schema ([pom.xml](../pom.xml#L24-L56), [DashboardController.java](../src/main/java/com/banking/dashboard/controller/DashboardController.java#L39-L104), [SchemaController.java](../src/main/java/com/banking/dashboard/controller/SchemaController.java#L26)). Business impact: data-breach, regulatory (GDPR/GLBA-type) and reputational exposure.
+   Any caller that can reach the service can download every customer's name, email, credit score and balances, trigger a DB-wide view refresh, and map the database schema ([pom.xml](../pom.xml#L24-L57), [DashboardController.java](../src/main/java/com/banking/dashboard/controller/DashboardController.java#L39-L104), [SchemaController.java](../src/main/java/com/banking/dashboard/controller/SchemaController.java#L26)). Business impact: data-breach, regulatory (GDPR/GLBA-type) and reputational exposure.
    *Mitigation:* add Spring Security with OAuth2/JWT and role-gate `refresh-views` and `/api/schema`; restrict network exposure.
 
 2. **Medium — Unbounded queries and on-demand refresh threaten availability.**
-   Every endpoint loads the full view (`findAll()`) and filters in memory, with no pagination ([DashboardService.java](../src/main/java/com/banking/dashboard/service/DashboardService.java#L46-L56)). Refresh runs synchronously inside a request with no throttling ([ViewRefreshService.java](../src/main/java/com/banking/dashboard/service/ViewRefreshService.java#L14-L17)). **(Inference)** As data grows, or if refresh is called repeatedly, dashboards slow down or time out and the shared DB comes under load.
+   Every endpoint loads the full view (`findAll()`) and filters in memory, with no pagination ([DashboardService.java](../src/main/java/com/banking/dashboard/service/DashboardService.java#L45-L67)). Refresh runs synchronously inside a request with no throttling ([ViewRefreshService.java](../src/main/java/com/banking/dashboard/service/ViewRefreshService.java#L14-L17)). **(Inference)** As data grows, or if refresh is called repeatedly, dashboards slow down or time out and the shared DB comes under load.
    *Mitigation:* add pagination with DB-side filtering; move refresh to a scheduled job (with `CONCURRENTLY` where supported) and rate-limit the endpoint.
 
 3. **Medium — Internal error details leak, and the delivery pipeline has no gates.**
