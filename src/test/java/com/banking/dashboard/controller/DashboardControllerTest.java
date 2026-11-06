@@ -188,6 +188,17 @@ class DashboardControllerTest {
         mockMvc.perform(post("/api/dashboard/refresh-views"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.success", is(false)))
-                .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("Failed to refresh views")));
+                .andExpect(jsonPath("$.message", is("Failed to refresh views")));
+    }
+
+    @Test
+    void unexpectedException_returnsGenericMessageWithoutDetails() throws Exception {
+        when(dashboardService.getMonthlyTransactionVolume())
+                .thenThrow(new RuntimeException("relation banking.mv_secret does not exist"));
+
+        mockMvc.perform(get("/api/dashboard/monthly-transactions"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.success", is(false)))
+                .andExpect(jsonPath("$.message", is("An unexpected error occurred")));
     }
 }

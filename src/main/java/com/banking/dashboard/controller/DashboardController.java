@@ -12,6 +12,8 @@ import com.banking.dashboard.service.ViewRefreshService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +28,8 @@ import java.util.List;
 @RequestMapping("/api/dashboard")
 @Tag(name = "Dashboard", description = "Banking analytics dashboard endpoints")
 public class DashboardController {
+
+    private static final Logger log = LoggerFactory.getLogger(DashboardController.class);
 
     private final DashboardService dashboardService;
     private final ViewRefreshService viewRefreshService;
@@ -98,8 +102,9 @@ public class DashboardController {
             viewRefreshService.refreshAllViews();
             return ResponseEntity.ok(ApiResponse.success("All materialized views refreshed successfully"));
         } catch (Exception e) {
+            log.error("Failed to refresh materialized views", e);
             return ResponseEntity.internalServerError()
-                    .body(ApiResponse.error("Failed to refresh views: " + e.getMessage()));
+                    .body(ApiResponse.error("Failed to refresh views"));
         }
     }
 }
