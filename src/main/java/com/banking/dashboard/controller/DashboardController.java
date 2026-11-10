@@ -12,6 +12,8 @@ import com.banking.dashboard.service.ViewRefreshService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.PositiveOrZero;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +33,9 @@ public class DashboardController {
 
     private static final Logger log = LoggerFactory.getLogger(DashboardController.class);
 
+    static final String TIER_PATTERN = "(?i)(PLATINUM|GOLD|SILVER|BRONZE)?";
+    static final String TIER_MESSAGE = "tier must be one of PLATINUM, GOLD, SILVER, BRONZE";
+
     private final DashboardService dashboardService;
     private final ViewRefreshService viewRefreshService;
 
@@ -45,7 +50,8 @@ public class DashboardController {
                description = "Returns all rows from mv_customer_portfolio. Optionally filter by tier (PLATINUM, GOLD, SILVER, BRONZE).")
     public ResponseEntity<ApiResponse<List<CustomerPortfolio>>> getCustomerPortfolio(
             @Parameter(description = "Customer tier filter (PLATINUM, GOLD, SILVER, BRONZE)")
-            @RequestParam(required = false) String tier) {
+            @RequestParam(required = false)
+            @Pattern(regexp = TIER_PATTERN, message = TIER_MESSAGE) String tier) {
         List<CustomerPortfolio> data = dashboardService.getCustomerPortfolios(tier);
         return ResponseEntity.ok(ApiResponse.success(data, data.size()));
     }
@@ -55,7 +61,8 @@ public class DashboardController {
                description = "Returns all rows from mv_branch_performance. Optionally filter by minimum deposits.")
     public ResponseEntity<ApiResponse<List<BranchPerformance>>> getBranchPerformance(
             @Parameter(description = "Minimum total deposits filter")
-            @RequestParam(name = "min_deposits", required = false) BigDecimal minDeposits) {
+            @RequestParam(name = "min_deposits", required = false)
+            @PositiveOrZero(message = "min_deposits must be zero or greater") BigDecimal minDeposits) {
         List<BranchPerformance> data = dashboardService.getBranchPerformance(minDeposits);
         return ResponseEntity.ok(ApiResponse.success(data, data.size()));
     }
@@ -89,7 +96,8 @@ public class DashboardController {
                description = "Returns all rows from mv_top_customers_aum. Optionally filter by tier.")
     public ResponseEntity<ApiResponse<List<TopCustomerAum>>> getTopCustomers(
             @Parameter(description = "Customer tier filter")
-            @RequestParam(required = false) String tier) {
+            @RequestParam(required = false)
+            @Pattern(regexp = TIER_PATTERN, message = TIER_MESSAGE) String tier) {
         List<TopCustomerAum> data = dashboardService.getTopCustomers(tier);
         return ResponseEntity.ok(ApiResponse.success(data, data.size()));
     }

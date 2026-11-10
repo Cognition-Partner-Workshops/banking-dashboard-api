@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -202,5 +203,42 @@ class DashboardControllerTest {
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.success", is(false)))
                 .andExpect(jsonPath("$.message", is("An unexpected error occurred")));
+    }
+
+    @Test
+    void getCustomerPortfolio_unknownTier_returnsBadRequest() throws Exception {
+        mockMvc.perform(get("/api/dashboard/customer-portfolio").param("tier", "' OR 1=1 --"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success", is(false)))
+                .andExpect(jsonPath("$.message", is("tier must be one of PLATINUM, GOLD, SILVER, BRONZE")));
+
+        verifyNoInteractions(dashboardService);
+    }
+
+    @Test
+    void getTopCustomers_unknownTier_returnsBadRequest() throws Exception {
+        mockMvc.perform(get("/api/dashboard/top-customers").param("tier", "DIAMOND"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success", is(false)));
+
+        verifyNoInteractions(dashboardService);
+    }
+
+    @Test
+    void getTopCustomers_lowercaseTier_isAccepted() throws Exception {
+        when(dashboardService.getTopCustomers("gold")).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/api/dashboard/top-customers").param("tier", "gold"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getBranchPerformance_negativeMinDeposits_returnsBadRequest() throws Exception {
+        mockMvc.perform(get("/api/dashboard/branch-performance").param("min_deposits", "-1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success", is(false)))
+                .andExpect(jsonPath("$.message", is("min_deposits must be zero or greater")));
+
+        verifyNoInteractions(dashboardService);
     }
 }
