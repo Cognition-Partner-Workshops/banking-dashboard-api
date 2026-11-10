@@ -1,0 +1,8 @@
+app: banking-dashboard-api
+smoke:
+  - path: /health
+    expect: 200
+  - path: /api/schema/tables
+    expect: 200
+  - path: /v3/api-docs
+    expect: 200

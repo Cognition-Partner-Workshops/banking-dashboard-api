@@ -1,4 +1,8 @@
 spring:
+  main:
+    banner-mode: off
+  jackson:
+    use-jackson2-defaults: true
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
@@ -16,6 +20,29 @@ spring:
 
 server:
   port: ${SERVER_PORT:8080}
+  tomcat:
+    threads:
+      max: 20
+      min-spare: 2
+
+logging:
+  structured:
+    format:
+      console: logstash
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include: readinessState,db
+          additional-path: server:/health
 
 springdoc:
   api-docs:

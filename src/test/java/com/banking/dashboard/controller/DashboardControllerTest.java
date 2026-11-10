@@ -10,9 +10,10 @@ import com.banking.dashboard.service.DashboardService;
 import com.banking.dashboard.service.ViewRefreshService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -32,15 +33,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(DashboardController.class)
+@ActiveProfiles("test")
 class DashboardControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private DashboardService dashboardService;
 
-    @MockBean
+    @MockitoBean
     private ViewRefreshService viewRefreshService;
 
     @Test
@@ -188,6 +190,17 @@ class DashboardControllerTest {
         mockMvc.perform(post("/api/dashboard/refresh-views"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.success", is(false)))
-                .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("Failed to refresh views")));
+                .andExpect(jsonPath("$.message", is("Failed to refresh views")));
+    }
+
+    @Test
+    void unexpectedException_returnsGenericMessageWithoutDetails() throws Exception {
+        when(dashboardService.getMonthlyTransactionVolume())
+                .thenThrow(new RuntimeException("relation banking.mv_secret does not exist"));
+
+        mockMvc.perform(get("/api/dashboard/monthly-transactions"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.success", is(false)))
+                .andExpect(jsonPath("$.message", is("An unexpected error occurred")));
     }
 }
